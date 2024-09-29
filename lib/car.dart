@@ -1,3 +1,4 @@
+import 'package:carbon_tree/summary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -9,6 +10,13 @@ const _cars = [
   'Tesla Model 3',
 ];
 
+class Journey {
+  final String car;
+  final double distance;
+
+  Journey(this.car, this.distance);
+}
+
 class CarRoute extends StatefulWidget {
   @override
   _CarRouteState createState() => _CarRouteState();
@@ -18,15 +26,33 @@ class _CarRouteState extends State<CarRoute> {
   final TextEditingController _kmController = TextEditingController();
   final List<String> _items = _cars;
   String _selectedItem = _cars[0];
-  List<String> _listItems = []; // Empty list to start with
+  List<Journey> _listItems = []; // Empty list to start with
   final _formKey = GlobalKey<FormState>();
+
+  double get totalCO2 {
+    return _listItems.fold<double>(0, (prev, journey) => prev + journey.distance * 0.01);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Car Journeys'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Car Journeys'),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Summary(co2: totalCO2,)),
+                );
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -85,8 +111,10 @@ class _CarRouteState extends State<CarRoute> {
                     : ListView.builder(
                         itemCount: _listItems.length,
                         itemBuilder: (context, index) {
+                          final journey = _listItems[index];
                           return ListTile(
-                            title: Text(_listItems[index]),
+                            title:
+                                Text('${journey.car}: ${journey.distance} km'),
                           );
                         },
                       ),
@@ -100,17 +128,12 @@ class _CarRouteState extends State<CarRoute> {
 
   void _onSubmit() {
     if (_formKey.currentState!.validate()) {
-      // Form is valid, proceed with submission
-      print('Selected item: $_selectedItem');
-      print('Distance: ${_kmController.text} km');
-
-      // Here you can add the logic to update your list
-      setState(() {
-        _listItems
-            .add('${_selectedItem ?? "No option"}: ${_kmController.text} km');
-      });
-
-      // Clear the form
+      var distance = double.tryParse(_kmController.text);
+      if (distance != null) {
+        setState(() {
+          _listItems.add(Journey(_selectedItem, distance));
+        });
+      }
       _kmController.clear();
     }
   }

@@ -1,6 +1,7 @@
 import 'package:carbon_tree/car.dart';
 import 'package:carbon_tree/food.dart';
 import 'package:carbon_tree/household.dart';
+import 'package:carbon_tree/summary.dart';
 import 'package:flex_seed_scheme/flex_seed_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -46,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   static List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
     Text('Search Page'),
-    Text('Profile Page'),
+    Text('Search Page'),
     Text('About Page'),
   ];
 
@@ -61,19 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(widget.title),
-            ElevatedButton(
-              onPressed: () {
-                // Add your submit functionality here
-                print('Submit button pressed');
-              },
-              child: const Text('Submit'),
-            ),
-          ],
-        ),
+        title: Text(widget.title),
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
@@ -98,15 +87,14 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-       selectedItemColor: Theme.of(context).colorScheme.primary,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
-          onTap: _onItemTapped,
+        onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
       ),
     );
   }
 }
-
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -122,7 +110,10 @@ class HomeScreen extends StatelessWidget {
               title: 'Food',
               icon: Icons.message,
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CarRoute()),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CarRoute()),
+                );
               },
             ),
           ),
@@ -133,7 +124,10 @@ class HomeScreen extends StatelessWidget {
               title: 'Contacts',
               icon: Icons.contacts,
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => FoodRoute()),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FoodRoute()),
+                );
               },
             ),
           ),
@@ -144,7 +138,10 @@ class HomeScreen extends StatelessWidget {
               title: 'Calendar',
               icon: Icons.calendar_today,
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => HouseholdRoute()),);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HouseholdRoute()),
+                );
               },
             ),
           ),

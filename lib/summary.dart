@@ -1,6 +1,105 @@
 import 'package:flutter/material.dart';
 import 'package:svg_path_parser/svg_path_parser.dart';
 
+class Summary extends StatefulWidget {
+  final double co2;
+
+  const Summary({super.key, required this.co2});
+
+  @override
+  State<Summary> createState() => _SummaryState();
+}
+
+abstract class GreenChoice {
+  final String name;
+  final double co2perTree;
+
+  const GreenChoice(this.name, this.co2perTree);
+
+  Widget getIndicator(double co2);
+}
+
+class TreeChoice extends GreenChoice {
+  const TreeChoice(super.name, super.co2perTree);
+
+  @override
+  Widget getIndicator(double co2) {
+    return AnimatedIndicators(value: co2 / co2perTree);
+  }
+}
+
+const _choices = [
+  TreeChoice('Large Trees', 9.0),
+  TreeChoice('Medium Trees', 6.0),
+  TreeChoice('Small Trees', 3.0),
+];
+
+class _SummaryState extends State<Summary> {
+  GreenChoice _selectedChoice = _choices[0];
+
+  double get co2 => widget.co2;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text('Emission Summary'),
+        ), 
+        body: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              Text(
+                'CO\u2082',
+                style: Theme.of(context).textTheme.displayLarge,
+              ),
+              SizedBox(height: 8),
+              Text(
+                '$co2 L released into the atmosphere',
+                style: Theme.of(context).textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+              DropdownButton<GreenChoice>(
+                isExpanded: true,
+                value: _selectedChoice,
+                hint: Text('Select an option'),
+                onChanged: (GreenChoice? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      _selectedChoice = newValue;
+                    });
+                  }
+                },
+                items: _choices
+                    .map<DropdownMenuItem<GreenChoice>>((GreenChoice choice) {
+                  return DropdownMenuItem<GreenChoice>(
+                    value: choice,
+                    child: Text(choice.name),
+                  );
+                }).toList(),
+              ),
+              SizedBox(height: 16),
+              _selectedChoice.getIndicator(co2),
+              SizedBox(height: 16),
+               Text(
+                'It would take ${(co2 / _selectedChoice.co2perTree).toStringAsPrecision(2)} trees to consume this CO\u2082 in one day',
+                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+              Expanded(child: SizedBox()),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Dismiss'),
+              ),
+            ],
+          ),
+        ));
+  }
+}
+
 class AnimatedTreeIndicator extends StatefulWidget {
   const AnimatedTreeIndicator({super.key});
 
@@ -69,18 +168,21 @@ class _AnimatedTreeIndicatorState extends State<AnimatedTreeIndicator>
 
   @override
   Widget build(BuildContext context) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              'CO\u2082',
-              style: Theme.of(context).textTheme.displayLarge,
-            ),
-            TreeIndicator(animation.value, scale: 0.4,),
-          ],
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        const Text(
+          'You have pushed the button this many times:',
+        ),
+        Text(
+          'CO\u2082',
+          style: Theme.of(context).textTheme.displayLarge,
+        ),
+        TreeIndicator(
+          animation.value,
+          scale: 0.4,
+        ),
+      ],
     );
   }
 
@@ -121,7 +223,8 @@ class TreeIndicator extends StatelessWidget {
                 ClipPath(
                   clipper: TreeClipPath(),
                   child: Container(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                   ),
                 ),
                 ClipRect(
@@ -147,5 +250,113 @@ class TreeIndicator extends StatelessWidget {
             ),
           ),
         ));
+  }
+}
+
+class AnimatedIndicators extends StatefulWidget {
+  final double value;
+  final Duration animationDuration;
+  final double spacing;
+  final double runSpacing;
+
+  const AnimatedIndicators({
+    Key? key,
+    required this.value,
+    this.animationDuration = const Duration(milliseconds: 500),
+    this.spacing = 4,
+    this.runSpacing = 4,
+  }) : super(key: key);
+
+  @override
+  _AnimatedIndicatorsState createState() => _AnimatedIndicatorsState();
+}
+
+class _AnimatedIndicatorsState extends State<AnimatedIndicators>
+    with TickerProviderStateMixin {
+  late List<AnimationController> _controllers;
+  late List<Animation<double>> _animations;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAnimations();
+  }
+
+  void _initializeAnimations() {
+    final int fullIndicators = widget.value.floor();
+    final double fractionalPart = widget.value - fullIndicators;
+
+    _controllers = List.generate(
+      fullIndicators + 1,
+      (index) => AnimationController(
+        duration: widget.animationDuration,
+        vsync: this,
+      ),
+    );
+
+    _animations = _controllers.map((controller) {
+      return Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: controller, curve: Curves.easeInOut),
+      );
+    }).toList();
+
+    // Set the last animation to the fractional part
+    if (_animations.isNotEmpty) {
+      _animations.last = Tween<double>(begin: 0, end: fractionalPart).animate(
+        CurvedAnimation(parent: _controllers.last, curve: Curves.easeInOut),
+      );
+    }
+
+    // Start animations sequentially
+    _startAnimationsSequentially();
+  }
+
+  void _startAnimationsSequentially() {
+    for (int i = 0; i < _controllers.length; i++) {
+      Future.delayed(Duration(milliseconds: i * 100), () {
+        _controllers[i].forward();
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(AnimatedIndicators oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) {
+      // Dispose old controllers and reinitialize animations
+      for (var controller in _controllers) {
+        controller.dispose();
+      }
+      _initializeAnimations();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: widget.spacing,
+      runSpacing: widget.runSpacing,
+      alignment: WrapAlignment.center,
+      children: List.generate(
+        _animations.length,
+        (index) => AnimatedBuilder(
+          animation: _animations[index],
+          builder: (context, child) {
+            return TreeIndicator(
+              _animations[index].value,
+              scale: 0.5,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 }
