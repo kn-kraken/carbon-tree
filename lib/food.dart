@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:pdfx/pdfx.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 const _foodItems = [
   'Beef',
@@ -114,15 +119,154 @@ class _FoodRouteState extends State<FoodRoute> {
       setState(() {
         _listItems.add('${_selectedItem}: ${_gramsController.text} g');
       });
-
       // Clear the form
       _gramsController.clear();
     }
   }
 
-  void _uploadReceipt() {
-    // Implement receipt upload functionality here
-    print('Upload receipt functionality to be implemented');
+  Future<void> _uploadReceipt() async {
+    await _selectPdfAndExtractText();
+  }
+
+  Future<void> _selectPdfAndExtractText() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+
+    if (result != null) {
+      File pdfFile = File(result.files.single.path!);
+      await _extractTextFromPdf(pdfFile);
+    } else {
+      print("No PDF selected.");
+    }
+  }
+
+  Future<void> _extractTextFromPdf(File pdfFile) async {
+    try {
+      List<File> imageFiles = await _convertPdfToImages(pdfFile);
+      List<String> allDetectedWords = []; // Store words in a list
+
+      // Detect text from each image
+      for (var imageFile in imageFiles) {
+        String detectedText = await _detectTextFromImage(imageFile);
+        String filteredText = _filterWords(detectedText);
+
+        // Add filtered words only if they're non-empty
+        if (filteredText.isNotEmpty) {
+          allDetectedWords.addAll(filteredText.split(' '));
+        }
+      }
+
+      // Update the recognized words for UI
+      setState(() {
+        _listItems = allDetectedWords;
+      });
+
+      // Print the final list of recognized words
+    } catch (e) {
+      //professional error handling
+    }
+  }
+
+  String _filterWords(String text) {
+    // List of common food-related words in Polish
+    final List<String> foodRelatedWords = [
+      'jabłko',
+      'banan',
+      'gruszka',
+      'chleb',
+      'bułka',
+      'ser',
+      'mięso',
+      'ryba',
+      'masło',
+      'mleko',
+      'jajko',
+      'pomidor',
+      'ogórek',
+      'marchew',
+      'ziemniak',
+      'sałata',
+      'czekolada',
+      'kawa',
+      'herbata',
+      'cukier',
+      'sól',
+      'pieprz',
+      'makaron',
+      'ryż',
+      'ciasto',
+      'bagietka',
+      'papryka',
+      'cebula',
+      'boczek',
+      'tost'
+    ];
+
+    // Convert food-related words to lowercase for case-insensitive comparison
+    final Set<String> foodRelatedWordsSet =
+        foodRelatedWords.map((word) => word.toLowerCase()).toSet();
+
+    // Split recognized text into words
+    List<String> allWords =
+        text.split(RegExp(r'\s+')); // Split by spaces or newlines
+
+    // Print recognized text and words (for debugging)
+    print("Recognized Words: $allWords");
+
+    // Filter out words that are not in the food-related words list (case-insensitive)
+    List<String> filteredWords = allWords.where((word) {
+      return foodRelatedWordsSet
+          .contains(word.toLowerCase()); // Case-insensitive comparison
+    }).toList();
+
+    // Print filtered words (for debugging)
+    print("Filtered Words: $filteredWords");
+
+    // Return the filtered words as a space-separated string
+    return filteredWords.join(' ');
+  }
+
+  Future<List<File>> _convertPdfToImages(File pdfFile) async {
+    final List<File> imageFiles = [];
+    final tempDir = await getTemporaryDirectory();
+
+    // Initialize PDF document
+    final document = await PdfDocument.openFile(pdfFile.path);
+
+    for (int pageNumber = 1; pageNumber <= document.pagesCount; pageNumber++) {
+      final page = await document.getPage(pageNumber);
+      final pageImage = await page.render(
+        width: page.width * 2, // Render with higher resolution
+        height: page.height * 2,
+        format: PdfPageImageFormat.png, // Render as PNG
+      );
+
+      final imgFile = File('${tempDir.path}/page_$pageNumber.png');
+      await imgFile.writeAsBytes(pageImage!.bytes);
+      imageFiles.add(imgFile);
+
+      await page.close();
+    }
+
+    await document.close();
+    return imageFiles;
+  }
+
+  Future<String> _detectTextFromImage(File imageFile) async {
+    final inputImage = InputImage.fromFile(imageFile);
+    final textDetector = GoogleMlKit.vision.textRecognizer();
+
+    final RecognizedText recognizedText =
+        await textDetector.processImage(inputImage);
+    String detectedText = recognizedText.text;
+
+    print("Detected Text: $detectedText"); // Debugging step
+
+    textDetector.close(); // Remember to close the detector
+
+    return detectedText;
   }
 
   @override
