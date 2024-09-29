@@ -8,8 +8,10 @@ import 'package:carbon_tree/trees_controller.dart';
 import 'package:flex_seed_scheme/flex_seed_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:flutter/rendering.dart';
 
 Future<void> main() async {
+  debugPaintSizeEnabled = false;
   WidgetsFlutterBinding.ensureInitialized();
   await initLocalStorage();
   runApp(const MyApp());

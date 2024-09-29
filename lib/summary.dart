@@ -28,9 +28,12 @@ class TreeChoice extends GreenChoice {
 
   @override
   Widget getIndicator(double co2) {
-    return AnimatedIndicators(value: co2 / co2perTree, getIndicator: ({required scale, required value}) {
-      return TreeIndicator(value, scale: scale);
-    },);
+    return AnimatedIndicators(
+      value: co2 / co2perTree,
+      getIndicator: ({required scale, required value}) {
+        return TreeIndicator(value, scale: scale);
+      },
+    );
   }
 }
 
@@ -42,9 +45,12 @@ class ParkChoice extends GreenChoice {
 
   @override
   Widget getIndicator(double co2) {
-    return AnimatedIndicators(value: co2 / co2perTree, getIndicator: ({required scale, required value}) {
-      return ParkIndicator(value, scale: scale * 0.4);
-    },);
+    return AnimatedIndicators(
+      value: co2 / co2perTree,
+      getIndicator: ({required scale, required value}) {
+        return ParkIndicator(value, scale: scale * 0.4);
+      },
+    );
   }
 }
 
@@ -103,10 +109,12 @@ class _SummaryState extends State<Summary> {
               SizedBox(height: 16),
               _selectedChoice.getIndicator(co2),
               SizedBox(height: 16),
-              Text(
-                'It would take ${(co2 / _selectedChoice.co2perTree).toStringAsPrecision(2)} ${_selectedChoice.entityName()} to consume this CO\u2082 in one day',
-                style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center,
+              Flexible(
+                child: Text(
+                  'It would take ${(co2 / _selectedChoice.co2perTree).toStringAsPrecision(2)} ${_selectedChoice.entityName()} to consume this CO\u2082 in one day',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
               ),
               Expanded(child: SizedBox()),
               ElevatedButton(
@@ -161,8 +169,7 @@ class ParkIndicator extends StatelessWidget {
                   child: ClipPath(
                     clipper: ParkClipPath(),
                     child: Container(
-                      color:
-                          Theme.of(context).colorScheme.inversePrimary,
+                      color: Theme.of(context).colorScheme.inversePrimary,
                     ),
                   ),
                 ),
@@ -331,7 +338,8 @@ class AnimatedIndicators extends StatefulWidget {
   final Duration animationDuration;
   final double spacing;
   final double runSpacing;
-  final Widget Function({ required double value, required double scale }) getIndicator; 
+  final Widget Function({required double value, required double scale})
+      getIndicator;
 
   const AnimatedIndicators({
     Key? key,
@@ -418,7 +426,7 @@ class _AnimatedIndicatorsState extends State<AnimatedIndicators>
           animation: _animations[index],
           builder: (context, child) {
             return widget.getIndicator(
-              value:  _animations[index].value,
+              value: _animations[index].value,
               scale: 0.5,
             );
           },
