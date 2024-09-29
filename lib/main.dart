@@ -2,6 +2,7 @@ import 'package:carbon_tree/car.dart';
 import 'package:carbon_tree/food.dart';
 import 'package:carbon_tree/household.dart';
 import 'package:carbon_tree/summary.dart';
+import 'package:carbon_tree/trees_controller.dart';
 import 'package:flex_seed_scheme/flex_seed_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -46,8 +47,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    ParkIndicator(0.5, scale: 1.0,),
-    Text('Search Page'),
+    ParkIndicator(
+      0.5,
+      scale: 1.0,
+    ),
+    TreesController(),
     Text('About Page'),
   ];
 
@@ -79,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Profile',
+            label: 'Nawyki',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.info),
