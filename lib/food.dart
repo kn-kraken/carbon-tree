@@ -30,7 +30,7 @@ class _FoodRouteState extends State<FoodRoute> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Food Consumption'),
+            Text('Food'),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacement(
@@ -93,7 +93,7 @@ class _FoodRouteState extends State<FoodRoute> {
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _onSubmit,
-                child: Text('Submit'),
+                child: Text('Add'),
               ),
               SizedBox(height: 8),
               OutlinedButton.icon(
