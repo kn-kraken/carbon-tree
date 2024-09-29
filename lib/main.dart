@@ -1,4 +1,6 @@
 import 'package:carbon_tree/car.dart';
+import 'package:carbon_tree/data_source_view.dart';
+import 'package:carbon_tree/event.dart';
 import 'package:carbon_tree/food.dart';
 import 'package:carbon_tree/household.dart';
 import 'package:carbon_tree/summary.dart';
@@ -27,7 +29,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'COtree'),
     );
   }
 }
@@ -44,11 +46,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  static List<Widget> _widgetOptions = <Widget>[
+  static final List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    ParkIndicator(0.5, scale: 1.0,),
-    Text('Search Page'),
-    Text('About Page'),
+    const ParkIndicator(
+      0.5,
+      scale: 1.0,
+    ),
+    EventsList(),
+    DataSourceAndCO2(),
   ];
 
   void _onItemTapped(int index) {
@@ -78,8 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.event),
+            label: 'Events',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.info),
@@ -107,8 +112,8 @@ class HomeScreen extends StatelessWidget {
           Flexible(
             child: _buildNavigationTile(
               context,
-              title: 'Food',
-              icon: Icons.message,
+              title: 'Travel',
+              icon: Icons.card_travel,
               onTap: () {
                 Navigator.push(
                   context,
@@ -121,8 +126,8 @@ class HomeScreen extends StatelessWidget {
           Flexible(
             child: _buildNavigationTile(
               context,
-              title: 'Contacts',
-              icon: Icons.contacts,
+              title: 'Food',
+              icon: Icons.food_bank_outlined,
               onTap: () {
                 Navigator.push(
                   context,
@@ -135,8 +140,8 @@ class HomeScreen extends StatelessWidget {
           Flexible(
             child: _buildNavigationTile(
               context,
-              title: 'Calendar',
-              icon: Icons.calendar_today,
+              title: 'Household',
+              icon: Icons.house_outlined,
               onTap: () {
                 Navigator.push(
                   context,
