@@ -10,6 +10,23 @@ const _cars = [
   'Tesla Model 3',
 ];
 
+const _publicTransport = [
+  'Bus',
+  'Tram',
+  'Train',
+];
+
+Map<String, double> emissionMultiplier = {
+  'Toyota Camry': 1,
+  'Ford Mustang': 2,
+  'Honda Civic': 1,
+  'BMW X5': 2,
+  'Tesla Model 3': 0.5,
+  'Bus': 0.1,
+  'Tram': 0.05,
+  'Train': 0.03,
+};
+
 class Journey {
   final String car;
   final double distance;
@@ -25,12 +42,17 @@ class CarRoute extends StatefulWidget {
 class _CarRouteState extends State<CarRoute> {
   final TextEditingController _kmController = TextEditingController();
   final List<String> _items = _cars;
+  final List<String> _itemsPublicTransport = _publicTransport;
   String _selectedItem = _cars[0];
   List<Journey> _listItems = []; // Empty list to start with
   final _formKey = GlobalKey<FormState>();
 
   double get totalCO2 {
-    return _listItems.fold<double>(0, (prev, journey) => prev + journey.distance * 0.01);
+    return _listItems.fold<double>(
+        0,
+        (prev, journey) =>
+            prev +
+            journey.distance * 0.01 * (emissionMultiplier[journey.car] ?? 1));
   }
 
   @override
@@ -41,12 +63,15 @@ class _CarRouteState extends State<CarRoute> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Car Journeys'),
+            Text('Journeys'),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => Summary(co2: totalCO2,)),
+                  MaterialPageRoute(
+                      builder: (context) => Summary(
+                            co2: totalCO2,
+                          )),
                 );
               },
               child: const Text('Submit'),
@@ -72,12 +97,45 @@ class _CarRouteState extends State<CarRoute> {
                     });
                   }
                 },
-                items: _items.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+                items: [
+                      const DropdownMenuItem<String>(
+                        value: 'Cars',
+                        enabled: false,
+                        child: Text(
+                          'Cars',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      )
+                    ] +
+                    _items.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList() +
+                    [
+                      const DropdownMenuItem<String>(
+                        value: 'Public Transport',
+                        enabled: false,
+                        child: Text(
+                          'Public Transport',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      )
+                    ] +
+                    _itemsPublicTransport
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
               ),
               SizedBox(height: 16),
               TextFormField(
