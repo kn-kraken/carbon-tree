@@ -36,10 +36,9 @@ final List<DataSource> dataSources = [
 
 // Example CO2 Emission Equations
 List<String> exampleEquations = [
-  "Gasoline: CO2 = Gallons × 8.89 kg CO2/gallon",
-  "Diesel: CO2 = Gallons × 10.16 kg CO2/gallon",
-  "Example: 10 Gallons of Gasoline = 10 × 8.89 = 88.9 kg CO2",
-  "Example: 5 Gallons of Diesel = 5 × 10.16 = 50.8 kg CO2",
+  "Heat: CO\u2082 = Heat × 0.466 kg CO\u2082/kWh",
+  "Electricity: CO\u2082 = Electricity × 0.698 kg CO\u2082/kWh",
+  "Water: CO\u2082 = Water × 0.149 kg CO\u2082/m\u00b3",
 ];
 
 class DataSourceAndCO2 extends StatelessWidget {
@@ -47,7 +46,7 @@ class DataSourceAndCO2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Data Sources and CO2 Emission Equations'),
+        title: Text('Data Sources and CO2 Emission Metrics'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -99,6 +98,47 @@ class DataSourceAndCO2 extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                               content: Text('Selected: ${dataSource.title}')),
+                        );
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            content: SizedBox(
+                              height: 350,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Source 1:',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  Text(
+                                      'https://www.cire.pl/artykuly/serwis-informacyjny-cire-24/152208-w-finlandii-zmierzono,-ile-co2-pochlania-jedno-drzewo'),
+                                  Text(
+                                    'Source 2:',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  Text(
+                                      'https://www.krakow.pl/zalacznik/470573'),
+                                  Text(
+                                    'Source 3:',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  Text(
+                                      'https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2024'),
+                                  Text(
+                                    'Animation 1:',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  Text(
+                                      'https://rive.app/community/files/798-1554-tree-demo/'),
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: Text('ok'))
+                            ],
+                          ),
                         );
                       },
                     ),

@@ -144,7 +144,7 @@ class _TreesControllerState extends State<TreesController> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Other Cracow citizens average: '),
+                        Text('Cracow citizens average: '),
                         Text('${150} g'),
                       ],
                     ),
@@ -181,7 +181,7 @@ class _TreesControllerState extends State<TreesController> {
                       columnSpacing: 1.0, // Adjust spacing between columns
                       columns: const [
                         DataColumn(label: Text('Habit')),
-                        DataColumn(label: Text('CO\u2082')),
+                        DataColumn(label: Text('CO\u2082(g)')),
                         DataColumn(label: Text('Add')),
                       ],
                       rows: availableHabits.entries

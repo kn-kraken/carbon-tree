@@ -1,3 +1,4 @@
+import 'package:carbon_tree/summary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
@@ -22,7 +23,7 @@ class _HouseholdRouteState extends State<HouseholdRoute> {
     _loadData();
   }
 
-  void _loadData()  {
+  void _loadData() {
     setState(() {
       _waterController.text = localStorage.getItem('water') ?? '';
       _gasController.text = localStorage.getItem('gas') ?? '';
@@ -63,6 +64,20 @@ class _HouseholdRouteState extends State<HouseholdRoute> {
               ElevatedButton(
                 onPressed: _isChanged ? _onSave : null,
                 child: Text('Save'),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              ParkIndicator(
+                  (0.149 * double.parse(_waterController.text) +
+                          0.698 * double.parse(_electricityController.text) +
+                          0.466 * double.parse(_gasController.text)) /
+                      300,
+                  scale: 0.35),
+              Text(
+                  "${((0.149 * double.parse(_waterController.text) + 0.698 * double.parse(_electricityController.text) + 0.466 * double.parse(_gasController.text)) / 307).toStringAsFixed(2)} - number of Skałki Twardowskiego parks needed to recompensate your carbon footprint a day."),
+              SizedBox(
+                height: 20,
               ),
             ],
           ),
