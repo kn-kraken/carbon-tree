@@ -3,6 +3,7 @@ import 'package:carbon_tree/data_source_view.dart';
 import 'package:carbon_tree/event.dart';
 import 'package:carbon_tree/food.dart';
 import 'package:carbon_tree/household.dart';
+import 'package:carbon_tree/services.dart';
 import 'package:carbon_tree/trees_controller.dart';
 import 'package:flex_seed_scheme/flex_seed_scheme.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     HomeScreen(),
     const TreesController(),
     EventsList(),
+    ServicesList(),
     DataSourceAndCO2(),
   ];
 
@@ -84,6 +86,10 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.event),
             label: 'Events',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.hotel),
+            label: 'Services',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.info),

@@ -1,28 +1,22 @@
 import 'package:flutter/material.dart';
 import 'summary.dart';
 
-class EventsList extends StatelessWidget {
-  final List<Event> events = [
-    Event(
-      name: 'Konferencja dotycząca tworzenia społeczności energetycznej',
-      co2Emission: 1000,
-      treeIndicator: 1000 / 7,
+class ServicesList extends StatelessWidget {
+  final List<Service> events = [
+    Service(
+      name: 'Hotel night in Poland',
+      co2Emission: 27,
+      treeIndicator: 27 / 7,
     ),
-    Event(name: 'Cracow Film Festival', co2Emission: 6, treeIndicator: 6 / 7),
-    Event(name: 'Cracow Book Fair', co2Emission: 0.8, treeIndicator: 0.8 / 7),
-    Event(
-        name: 'Cracow Easter Festival',
-        co2Emission: 3.5,
-        treeIndicator: 3.5 / 7),
   ];
 
-  EventsList({super.key});
+  ServicesList({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cracow City Events'),
+        title: Text('Cracow Services'),
       ),
       body: ListView.builder(
         itemCount: events.length,
@@ -42,12 +36,12 @@ class EventsList extends StatelessWidget {
   }
 }
 
-class Event {
+class Service {
   final String name;
   final double co2Emission;
   final double treeIndicator;
 
-  Event(
+  Service(
       {required this.name,
       required this.co2Emission,
       required this.treeIndicator});

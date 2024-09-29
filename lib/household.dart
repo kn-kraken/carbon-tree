@@ -39,47 +39,52 @@ class _HouseholdRouteState extends State<HouseholdRoute> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Household Consumption'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          onChanged: () {
-            setState(() {
-              _isChanged = true;
-            });
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildNumericInput(
-                  _waterController, 'Water usage', 'cubic meters'),
-              SizedBox(height: 16),
-              _buildNumericInput(_gasController, 'Gas usage', 'cubic meters'),
-              SizedBox(height: 16),
-              _buildNumericInput(_trashController, 'Trash disposed', 'kg'),
-              SizedBox(height: 16),
-              _buildNumericInput(
-                  _electricityController, 'Electric power usage', 'kWh'),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _isChanged ? _onSave : null,
-                child: Text('Save'),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              ParkIndicator(
-                  (0.149 * double.parse(_waterController.text) +
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            onChanged: () {
+              setState(() {
+                _isChanged = true;
+              });
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildNumericInput(
+                    _waterController, 'Water usage', 'cubic meters'),
+                SizedBox(height: 16),
+                _buildNumericInput(_gasController, 'Gas usage', 'cubic meters'),
+                SizedBox(height: 16),
+                _buildNumericInput(_trashController, 'Trash disposed', 'kg'),
+                SizedBox(height: 16),
+                _buildNumericInput(
+                    _electricityController, 'Electric power usage', 'kWh'),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _isChanged ? _onSave : null,
+                  child: Text('Save'),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                AnimatedIndicators(
+                  value: (0.149 * double.parse(_waterController.text) +
                           0.698 * double.parse(_electricityController.text) +
                           0.466 * double.parse(_gasController.text)) /
                       300,
-                  scale: 0.35),
-              Text(
-                  "${((0.149 * double.parse(_waterController.text) + 0.698 * double.parse(_electricityController.text) + 0.466 * double.parse(_gasController.text)) / 307).toStringAsFixed(2)} - number of Skałki Twardowskiego parks needed to recompensate your carbon footprint a day."),
-              SizedBox(
-                height: 20,
-              ),
-            ],
+                  getIndicator: ({required scale, required value}) {
+                    return ParkIndicator(value, scale: scale * 0.3);
+                  },
+                ),
+                Text(
+                    "${((0.149 * double.parse(_waterController.text) + 0.698 * double.parse(_electricityController.text) + 0.466 * double.parse(_gasController.text)) / 307).toStringAsFixed(2)} - number of Skałki Twardowskiego parks needed to recompensate your carbon footprint a day."),
+                SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
           ),
         ),
       ),
