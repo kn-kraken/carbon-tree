@@ -3,7 +3,6 @@ import 'package:carbon_tree/data_source_view.dart';
 import 'package:carbon_tree/event.dart';
 import 'package:carbon_tree/food.dart';
 import 'package:carbon_tree/household.dart';
-import 'package:carbon_tree/summary.dart';
 import 'package:carbon_tree/trees_controller.dart';
 import 'package:flex_seed_scheme/flex_seed_scheme.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +21,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      debugShowMaterialGrid: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: SeedColorScheme.fromSeeds(
@@ -49,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    TreesController(),
+    const TreesController(),
     EventsList(),
     DataSourceAndCO2(),
   ];

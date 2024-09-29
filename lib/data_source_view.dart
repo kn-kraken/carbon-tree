@@ -55,7 +55,7 @@ class DataSourceAndCO2 extends StatelessWidget {
           children: [
             // Example CO2 Emission Equations Section
             Text(
-              'Example CO2 Emission Equations:',
+              'Example CO\u2082 Emission Equations:',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
@@ -122,7 +122,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Data Sources and CO2 Emission App',
+      title: 'Data Sources and CO\u2082 Emission App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

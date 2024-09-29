@@ -3,11 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-<<<<<<< HEAD
   pdfx
-=======
   rive_common
->>>>>>> cdd61dec22e7d50c57a543e59ab9c2500fe636ac
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

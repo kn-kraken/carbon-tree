@@ -178,7 +178,7 @@ class _FoodRouteState extends State<FoodRoute> {
 
       // Update the recognized words for UI
       setState(() {
-        _listItems = allDetectedWords;
+        _listItems.addAll(allDetectedWords);
       });
 
       // Print the final list of recognized words

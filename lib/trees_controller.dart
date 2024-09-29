@@ -17,9 +17,9 @@ class _TreesControllerState extends State<TreesController> {
   int dailyTotalCO2Saved = 0;
 
   Map<String, int> availableHabits = {
-    "Jazda na rowerze": 100,
-    "Transport publiczny": 300,
-    "Zrównoważone jedzenie": 200,
+    "Cycling": 100,
+    "Public transport": 300,
+    "Sutainable diet": 200,
   };
 
   List<Widget> completedTrees = List.of([
@@ -31,7 +31,6 @@ class _TreesControllerState extends State<TreesController> {
     GrownTree(56.0),
     GrownTree(59.0),
     emptyTree,
-    //
     emptyTree,
     GrownTree(55.0),
     GrownTree(56.0),
@@ -45,12 +44,12 @@ class _TreesControllerState extends State<TreesController> {
   List<GrowingTree> currentHabits = List.of([]);
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     currentHabits = List.of([
-      GrowingTree(2, "Jazda na rowerze", 100, migrateTree, addSavedC02),
-      GrowingTree(4, "Transport publiczny", 300, migrateTree, addSavedC02),
-      GrowingTree(6, "Zrównoważone jedzenie", 200, migrateTree, addSavedC02),
+      GrowingTree(2, "Cycling", 100, migrateTree, addSavedC02),
+      GrowingTree(4, "Public transport", 300, migrateTree, addSavedC02),
+      GrowingTree(6, "Sustainable diet", 200, migrateTree, addSavedC02),
     ]);
   }
 
@@ -75,8 +74,13 @@ class _TreesControllerState extends State<TreesController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Las wykonanych zadań'),
-          // grown trees
+          Text(
+            'Forest of completed tasks',
+            style: TextStyle(
+              fontSize: 25,
+            ),
+          ),
+          // Grown trees
           Wrap(
             spacing: -60,
             direction: Axis.vertical,
@@ -91,11 +95,16 @@ class _TreesControllerState extends State<TreesController> {
                 .toList(),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 80),
+            padding: EdgeInsets.only(top: 54),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Dziesiejsze zadania'),
+                Text(
+                  'Daily tasks',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: currentHabits,
@@ -114,32 +123,39 @@ class _TreesControllerState extends State<TreesController> {
     return TextButton(
       onPressed: () {
         showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                  scrollable: true,
-                  title: Text('Podsumowanie'),
-                  content: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Dzienna oszczędność CO2: '),
-                          Text(dailyTotalCO2Saved.toString()),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Średnia innych użytkowników: '),
-                          Text(150.toString()),
-                        ],
-                      ),
-                    ],
-                  ));
-            });
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              scrollable: true,
+              title: Text('Summary'),
+              content: Container(
+                width: 300, // Set your desired width
+                height: 100, // Set your desired height
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Daily reduction of CO\u2082: '),
+                        Text('${dailyTotalCO2Saved}g'),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Other Cracow citizens average: '),
+                        Text('${150} g'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
       },
-      child: Text('Podsumowanie'),
+      child: Text('Summary'),
     );
   }
 
@@ -147,51 +163,95 @@ class _TreesControllerState extends State<TreesController> {
     return TextButton(
       onPressed: () {
         showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                scrollable: true,
-                title: Text('Wybierz nawyk'),
-                content: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('Nawyk')),
-                    DataColumn(label: Text('CO2')),
-                    DataColumn(label: Text('Dodaj')),
-                  ],
-                  rows: availableHabits.entries
-                      .map(
-                        (entry) => DataRow(
-                          cells: [
-                            DataCell(Text(entry.key)),
-                            DataCell(Text(entry.value.toString())),
-                            DataCell(
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  setState(() {
-                                    currentHabits.add(
-                                      GrowingTree(
-                                        0,
-                                        entry.key,
-                                        entry.value,
-                                        migrateTree,
-                                        addSavedC02,
-                                      ),
-                                    );
-                                  });
-                                },
-                                child: Text('+'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                      .toList(),
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              scrollable: true,
+              title: Text('Pick habit'),
+              content: Container(
+                width: 300, // Set your desired width
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height *
+                      0.5, // Set max height dynamically
                 ),
-              );
-            });
+                child: SingleChildScrollView(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columnSpacing: 1.0, // Adjust spacing between columns
+                      columns: const [
+                        DataColumn(label: Text('Habit')),
+                        DataColumn(label: Text('CO\u2082')),
+                        DataColumn(label: Text('Add')),
+                      ],
+                      rows: availableHabits.entries
+                          .map(
+                            (entry) => DataRow(
+                              cells: [
+                                DataCell(Container(
+                                  width:
+                                      100, // Set a specific width for the cell
+                                  child: Text(entry.key),
+                                )),
+                                DataCell(Container(
+                                  width:
+                                      60, // Set a specific width for the cell
+                                  child: Text(entry.value.toString()),
+                                )),
+                                DataCell(
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 8.0,
+                                      bottom: 10.0,
+                                    ),
+                                    child: SizedBox(
+                                      width: 50,
+                                      height:
+                                          30, // Set a specific width for the button
+                                      child: IconButton(
+                                        icon: Icon(Icons.add),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            if (currentHabits.length < 3) {
+                                              currentHabits.add(
+                                                GrowingTree(
+                                                  0,
+                                                  entry.key,
+                                                  entry.value,
+                                                  migrateTree,
+                                                  addSavedC02,
+                                                ),
+                                              );
+                                            } else {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                  title: Text(
+                                                      'Cannot track more than 3 habits'),
+                                                ),
+                                              );
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
       },
-      child: Text('Dodaj nawyk'),
+      child: Text('Add habit'),
     );
   }
 }
