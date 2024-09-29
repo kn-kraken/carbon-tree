@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    Text('Search Page'),
+    ParkIndicator(0.5, scale: 1.0,),
     Text('Search Page'),
     Text('About Page'),
   ];

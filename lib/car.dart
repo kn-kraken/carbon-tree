@@ -101,7 +101,7 @@ class _CarRouteState extends State<CarRoute> {
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _onSubmit,
-                child: Text('Submit'),
+                child: Text('Add'),
               ),
               SizedBox(height: 16),
               Divider(thickness: 1),

@@ -17,14 +17,34 @@ abstract class GreenChoice {
   const GreenChoice(this.name, this.co2perTree);
 
   Widget getIndicator(double co2);
+  String entityName();
 }
 
 class TreeChoice extends GreenChoice {
   const TreeChoice(super.name, super.co2perTree);
 
   @override
+  String entityName() => 'trees';
+
+  @override
   Widget getIndicator(double co2) {
-    return AnimatedIndicators(value: co2 / co2perTree);
+    return AnimatedIndicators(value: co2 / co2perTree, getIndicator: ({required scale, required value}) {
+      return TreeIndicator(value, scale: scale);
+    },);
+  }
+}
+
+class ParkChoice extends GreenChoice {
+  const ParkChoice(super.name, super.co2perTree);
+
+  @override
+  String entityName() => 'of all trees in this park';
+
+  @override
+  Widget getIndicator(double co2) {
+    return AnimatedIndicators(value: co2 / co2perTree, getIndicator: ({required scale, required value}) {
+      return ParkIndicator(value, scale: scale * 0.4);
+    },);
   }
 }
 
@@ -32,6 +52,7 @@ const _choices = [
   TreeChoice('Large Trees', 9.0),
   TreeChoice('Medium Trees', 6.0),
   TreeChoice('Small Trees', 3.0),
+  ParkChoice('Skałki Twardowskiego', 300.0)
 ];
 
 class _SummaryState extends State<Summary> {
@@ -45,7 +66,7 @@ class _SummaryState extends State<Summary> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text('Emission Summary'),
-        ), 
+        ),
         body: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
@@ -82,8 +103,8 @@ class _SummaryState extends State<Summary> {
               SizedBox(height: 16),
               _selectedChoice.getIndicator(co2),
               SizedBox(height: 16),
-               Text(
-                'It would take ${(co2 / _selectedChoice.co2perTree).toStringAsPrecision(2)} trees to consume this CO\u2082 in one day',
+              Text(
+                'It would take ${(co2 / _selectedChoice.co2perTree).toStringAsPrecision(2)} ${_selectedChoice.entityName()} to consume this CO\u2082 in one day',
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
@@ -95,6 +116,58 @@ class _SummaryState extends State<Summary> {
                 child: Text('Dismiss'),
               ),
             ],
+          ),
+        ));
+  }
+}
+
+class ParkClipPath extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    return parseSvgPath(
+        "M145.5 275.5L104.5 287L97.5 290C85.8333 286.167 81.5 264 55.5 295.5C38.3718 316.251 10.3411 318.201 6.5 315C3.5 312.5 -3.5 270.5 6.5 239.5C16.5 208.5 20 225 47.5 193.5C75 162 62 155 73.5 137C85 119 104.5 121 126.5 120C148.5 119 135 145 136.5 160.5C138 176 158.5 160.5 158.5 145C158.5 129.5 185 117 187.5 115.5C196.128 110.323 166 92.5 158.5 85.5C151 78.5 104.5 87 108.5 64.5C112.5 42 145.5 12 158.5 3.49999C171.5 -5.00003 194 12 205 17C216 22 223 55.5 239.5 68C256 80.5 252.441 58.4248 289.5 64.5C320 69.5 285 50.5 296 30C307.545 8.48362 322.5 12 329 12C345.919 12 359 21.5 365 27C371 32.5 379 87 377.5 107.5C376 128 351 149 351 156C351 163 392 170.5 402.5 177C413 183.5 380 229.5 369.5 236C359 242.5 340 229 329 225C318 221 309 232.5 296.5 239.5C284 246.5 290.5 247 283.5 266.5C276.5 286 283.5 301 283.5 315C283.5 329 240.5 400 234 404.5C227.5 409 214.5 396 205 392C195.5 388 178 304.5 172 287C167.2 273 152.333 273.5 145.5 275.5Z");
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+}
+
+class ParkIndicator extends StatelessWidget {
+  final double fraction;
+  final double scale;
+
+  const ParkIndicator(this.fraction, {super.key, required this.scale});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+        width: 400 * scale,
+        height: 400 * scale,
+        child: FittedBox(
+          child: SizedBox(
+            height: 400,
+            width: 400,
+            child: Stack(
+              children: [
+                ClipPath(
+                  clipper: ParkClipPath(),
+                  child: Container(
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                  ),
+                ),
+                ClipRect(
+                  clipper: LoadUpClipPath(fraction),
+                  child: ClipPath(
+                    clipper: ParkClipPath(),
+                    child: Container(
+                      color:
+                          Theme.of(context).colorScheme.inversePrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ));
   }
@@ -258,10 +331,12 @@ class AnimatedIndicators extends StatefulWidget {
   final Duration animationDuration;
   final double spacing;
   final double runSpacing;
+  final Widget Function({ required double value, required double scale }) getIndicator; 
 
   const AnimatedIndicators({
     Key? key,
     required this.value,
+    required this.getIndicator,
     this.animationDuration = const Duration(milliseconds: 500),
     this.spacing = 4,
     this.runSpacing = 4,
@@ -342,8 +417,8 @@ class _AnimatedIndicatorsState extends State<AnimatedIndicators>
         (index) => AnimatedBuilder(
           animation: _animations[index],
           builder: (context, child) {
-            return TreeIndicator(
-              _animations[index].value,
+            return widget.getIndicator(
+              value:  _animations[index].value,
               scale: 0.5,
             );
           },
