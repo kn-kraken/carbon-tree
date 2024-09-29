@@ -1,3 +1,4 @@
+import 'package:carbon_tree/summary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
@@ -31,7 +32,24 @@ class _FoodRouteState extends State<FoodRoute> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Food Consumption'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Food Consumption'),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Summary(
+                            co2: _listItems.length * 0.01,
+                          )),
+                );
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
