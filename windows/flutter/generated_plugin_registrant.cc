@@ -12,3 +12,9 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
   PdfxPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("PdfxPlugin"));
 }
+#include <rive_common/rive_plugin.h>
+
+void RegisterPlugins(flutter::PluginRegistry* registry) {
+  RivePluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("RivePlugin"));
+}

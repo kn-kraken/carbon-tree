@@ -4,6 +4,7 @@ import 'package:carbon_tree/event.dart';
 import 'package:carbon_tree/food.dart';
 import 'package:carbon_tree/household.dart';
 import 'package:carbon_tree/summary.dart';
+import 'package:carbon_tree/trees_controller.dart';
 import 'package:flex_seed_scheme/flex_seed_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -48,10 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    const ParkIndicator(
-      0.5,
-      scale: 1.0,
-    ),
+    TreesController(),
     EventsList(),
     DataSourceAndCO2(),
   ];
@@ -79,8 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
+            icon: Icon(Icons.list),
+            label: 'Habits',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.event),
